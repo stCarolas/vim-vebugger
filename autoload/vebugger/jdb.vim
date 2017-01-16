@@ -1,6 +1,7 @@
 function! vebugger#jdb#start(entryClass,args)
 	let l:debugger=vebugger#std#startDebugger(shellescape(vebugger#util#getToolFullPath('jdb',get(a:args,'version'),'jdb'))
-				\.(has_key(a:args,'classpath') ? ' -classpath '.fnameescape(a:args.classpath) : ''))
+				\.(has_key(a:args,'classpath') ? ' -classpath '.fnameescape(a:args.classpath) : '')
+                \.(has_key(a:args,'con') ? ' -attach '.fnameescape(a:args.con) : ''))
 	let l:debugger.state.jdb={}
 	if has_key(a:args,'srcpath')
 		let l:debugger.state.jdb.srcpath=a:args.srcpath
@@ -12,7 +13,7 @@ function! vebugger#jdb#start(entryClass,args)
 	call l:debugger.writeLine('stop on '.a:entryClass.'.main')
 	call l:debugger.writeLine('run  '.a:entryClass.' '.vebugger#util#commandLineArgsForProgram(a:args))
 	call l:debugger.writeLine('monitor where')
-	if !has('win32')
+    if !has('win32') && !has_key(a:args, 'con')
 		call vebugger#std#openShellBuffer(l:debugger)
 	endif
 
